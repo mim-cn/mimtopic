@@ -1,20 +1,4 @@
 /*
- * =============================================================================
- *
- *       Filename:  rbtree.h
- *
- *    Description:  rbtree(Red-Black tree) implementation adapted from linux
- *                  kernel thus can be used in userspace c program.
- *
- *        Created:  09/02/2012 11:36:11 PM
- *
- *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
- *        Company:  ICT ( Institute Of Computing Technology, CAS )
- *
- * =============================================================================
- */
-
-/*
   Red Black Trees
   (C) 1999  Andrea Arcangeli <andrea@suse.de>
   
@@ -144,37 +128,38 @@ struct rb_node
 	struct rb_node *rb_left;
 } __attribute__((aligned(sizeof(long))));
     /* The alignment might seem pointless, but allegedly CRIS needs it */
+typedef struct rb_node rb_node_t;
 
-struct rb_root
+typedef struct rb_root
 {
 	struct rb_node *rb_node;
-};
+}rb_root_t;
 
 
-#define rb_parent(r)   ((struct rb_node *)((r)->rb_parent_color & ~3))
-#define rb_color(r)   ((r)->rb_parent_color & 1)
+#define rb_parent(r)   ((rb_node_t *)((r)->rb_parent_color & ~3))
+#define rb_color(r)    ((r)->rb_parent_color & 1)
 #define rb_is_red(r)   (!rb_color(r))
-#define rb_is_black(r) rb_color(r)
-#define rb_set_red(r)  do { (r)->rb_parent_color &= ~1; } while (0)
-#define rb_set_black(r)  do { (r)->rb_parent_color |= 1; } while (0)
+#define rb_is_black(r) (rb_color(r))
+#define rb_set_red(r)   do { (r)->rb_parent_color &= ~1; } while (0)
+#define rb_set_black(r) do { (r)->rb_parent_color |= 1; } while (0)
 
-static inline void rb_set_parent(struct rb_node *rb, struct rb_node *p)
+static inline void rb_set_parent(rb_node_t *rb, rb_node_t *p)
 {
 	rb->rb_parent_color = (rb->rb_parent_color & 3) | (unsigned long)p;
 }
-static inline void rb_set_color(struct rb_node *rb, int color)
+static inline void rb_set_color(rb_node_t *rb, int color)
 {
 	rb->rb_parent_color = (rb->rb_parent_color & ~1) | color;
 }
 
-#define RB_ROOT	(struct rb_root) { NULL, }
+#define RB_ROOT	(rb_root_t){ NULL }
 #define	rb_entry(ptr, type, member) container_of(ptr, type, member)
 
 #define RB_EMPTY_ROOT(root)	((root)->rb_node == NULL)
 #define RB_EMPTY_NODE(node)	(rb_parent(node) == node)
 #define RB_CLEAR_NODE(node)	(rb_set_parent(node, node))
 
-static inline void rb_init_node(struct rb_node *rb)
+static inline void rb_init_node(rb_node_t *rb)
 {
 	rb->rb_parent_color = 0;
 	rb->rb_right = NULL;
@@ -182,33 +167,27 @@ static inline void rb_init_node(struct rb_node *rb)
 	RB_CLEAR_NODE(rb);
 }
 
-extern void rb_insert_color(struct rb_node *, struct rb_root *);
-extern void rb_erase(struct rb_node *, struct rb_root *);
+extern void rb_insert_color(rb_node_t* node, rb_root_t* root);
+extern void rb_erase(rb_node_t* node, rb_root_t* root);
 
-typedef void (*rb_augment_f)(struct rb_node *node, void *data);
+typedef void (*rb_augment_f)(rb_node_t *node, void *data);
 
-extern void rb_augment_insert(struct rb_node *node,
-			      rb_augment_f func, void *data);
-extern struct rb_node *rb_augment_erase_begin(struct rb_node *node);
-extern void rb_augment_erase_end(struct rb_node *node,
-				 rb_augment_f func, void *data);
+extern void rb_augment_insert(rb_node_t *node, rb_augment_f func, void *data);
+extern rb_node_t *rb_augment_erase_begin(rb_node_t *node);
+extern void rb_augment_erase_end(rb_node_t *node, rb_augment_f func, void *data);
 
 /* Find logical next and previous nodes in a tree */
-extern struct rb_node *rb_next(const struct rb_node *);
-extern struct rb_node *rb_prev(const struct rb_node *);
-extern struct rb_node *rb_first(const struct rb_root *);
-extern struct rb_node *rb_last(const struct rb_root *);
+extern rb_node_t *rb_next(const rb_node_t *);
+extern rb_node_t *rb_prev(const rb_node_t *);
+extern rb_node_t *rb_first(const rb_root_t *);
+extern rb_node_t *rb_last(const rb_root_t *);
 
 /* Fast replacement of a single node without remove/rebalance/add/rebalance */
-extern void rb_replace_node(struct rb_node *victim, struct rb_node *new, 
-			    struct rb_root *root);
-
-static inline void rb_link_node(struct rb_node * node, struct rb_node * parent,
-				struct rb_node ** rb_link)
+extern void rb_replace_node(rb_node_t *victim, rb_node_t *newnode,rb_root_t *root);
+static inline void rb_link_node(rb_node_t * node, rb_node_t * parent, rb_node_t ** rb_link)
 {
 	node->rb_parent_color = (unsigned long )parent;
 	node->rb_left = node->rb_right = NULL;
-
 	*rb_link = node;
 }
 

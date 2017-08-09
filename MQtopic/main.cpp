@@ -9,12 +9,12 @@
 int main()
 {
     rbtrees rb;
-	/* *insert */
-	int i = 0;
-	printf("insert node from 1 to NUM_NODES(32): \n");
-	for (; i < NUM_NODES; i++) {
-        rb.add(&i,sizeof(i));
-	}
+    /* *insert */
+    int i = 0;
+    printf("insert node from 1 to NUM_NODES(32): \n");
+    for (; i < NUM_NODES; i++) {
+        rb.insert(&i,sizeof(i));
+    }
     rb.traverse();
     /* *delete */
     printf("delete node 20: \n");
@@ -27,7 +27,7 @@ int main()
     d = 15;
     rb.erase(&d);
     rb.traverse();
-	return 0;
+    return 0;
 }
 
 

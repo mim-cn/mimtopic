@@ -6,8 +6,8 @@
 #ifdef  __cplusplus
 extern "C" {
 #endif
-#include "rbtree.h"
 
+#include "rbtree.h"
 typedef struct _rbnode
 {
     rb_node_t _rbnode;
@@ -24,14 +24,16 @@ class rbtrees
 {
 public:
     rbtrees();
+    ~rbtrees();
 public:
-    void    add(const void* content, int size);
-    int     insert(rbnode *data);
+    void    insert(const void* content, int size);
     void    erase(const void *cnt);
-    void    freeNode(rbnode* node);
     rbnode* search(const void* content);
-    rbnode* _search(rb_root_t *root, const void* content);
     void    traverse();
+private:
+    int     _insert(rbnode *data);
+    void    _free(rbnode* node);
+    rbnode* _search(rb_root_t *root, const void* content);
 public:
     inline void* content(rb_node *node)
     {

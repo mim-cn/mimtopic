@@ -3,12 +3,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <list>
 #ifdef  __cplusplus
 extern "C" {
 #endif
 
 #include "rbtree.h"
-typedef struct _rbnode
+typedef struct __rbnode
 {
     rb_node_t _rbnode;
     void*     _data;
@@ -22,12 +23,14 @@ typedef struct _rbnode
 
 class rbtrees
 {
+    typedef std::list<rbnode*> lrbnode;
 public:
     rbtrees();
     ~rbtrees();
 public:
     void    insert(const void* content, int size);
     void    erase(const void *cnt);
+    void    erase(rbnode *node);
     rbnode* search(const void* content);
     void    traverse();
 private:
@@ -40,9 +43,8 @@ public:
         return (rb_entry(node, rbnode, _rbnode)->_data);
     }
 private:
-    rbnode**    _nodes;
+    lrbnode     _nodes;
     rb_root_t*  _root;
-    int         _num;
 };
 
 #endif // RBTREES_H

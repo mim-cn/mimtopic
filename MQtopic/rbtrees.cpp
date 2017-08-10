@@ -1,58 +1,38 @@
 #include "rbtrees.h"
 
-rbtrees::rbtrees():_num(0)
+rbtrees::rbtrees()
 {
     _root = (rb_root_t*)malloc(sizeof(rb_root_t));
-	/* This clear is very important */
-	memset(_root,0,sizeof(rb_root_t));
-    _nodes = (rbnode**)malloc(sizeof(rbnode*));
+    /* This clear is very important */
+    memset(_root,0,sizeof(rb_root_t));
 }
 
 rbtrees::~rbtrees()
 {
-	if(_nodes && _root){
-        rb_node_t *node = NULL, *next = NULL;
-		printf("delete all nodes: \n");
-        for (node = rb_first(_root); node;){
+    if(_root){
+        rb_node_t *node = rb_first(_root), *next = NULL ;
+        while (node) {
             next = rb_next(node);
-            rbnode *data = container_of(node, rbnode, _rbnode);
-			if (data) {
-				rb_erase(&data->_rbnode, _root);
-				this->_free(data);
-			}
-            node = next;
-		}
-        if(_nodes){
-            /*
-            int i = 0;
-            while(i < _num){
-                if(_nodes[i]){
-                    free(_nodes[i]);
-                    _nodes[i] = NULL;
-                }
-                i++;
+            rbnode *rbn = rb_entry(node,rbnode,_rbnode);
+            if (rbn) {
+                this->erase(rbn);
             }
-            */
-            _num = 0;
-            // free(_nodes);
-			_nodes = NULL;
+            node = next;
         }
-        if(_root){
-            free(_root);
-            _root = NULL;
-        }
+        free(_root);
+        _root = NULL;
         printf("delete all nodes OK \n");
-	}
+    }
 }
 
 void rbtrees::insert(const void* content, int size)
 {
-    _nodes[_num] = (rbnode *)malloc(sizeof(rbnode));
-    _nodes[_num]->_size = size;
-    _nodes[_num]->_data = (char *)malloc(size);
-    memcpy(_nodes[_num]->_data,content,size);
-    this->_insert(_nodes[_num]);
-    _num++;
+    rbnode* node = (rbnode *)malloc(sizeof(rbnode));
+    node->_size = size;
+    node->_data = (char *)malloc(size);
+    memcpy(node->_data,content,size);
+    _nodes.push_back(node);
+    this->_insert(node);
 }
 
 int  rbtrees::_insert(rbnode *data)
@@ -82,6 +62,14 @@ void rbtrees::erase(const void *cnt)
     if (data) {
         rb_erase(&data->_rbnode, _root);
         this->_free(data);
+    }
+}
+
+void rbtrees::erase(rbnode *node)
+{
+    if(node){
+        rb_erase(&node->_rbnode, _root);
+        this->_free(node);
     }
 }
 
@@ -122,10 +110,11 @@ rbnode* rbtrees::search(const void* content)
 
 void    rbtrees::traverse()
 {
-    rb_node_t *node;
-    printf("search all nodes: \n");
-    for (node = rb_first(_root); node; node = rb_next(node)){
+    rb_node_t *node = rb_first(_root);
+    while (node) {
+        rbnode *rbn = rb_entry(node, rbnode, _rbnode);
         printf("%d ", *(int*)content(node));
+        node = rb_next(node);
     }
     printf("\n");
 }

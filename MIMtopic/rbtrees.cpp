@@ -111,6 +111,11 @@ rbnode* rbtrees::search(const char* content)
     return _search(_root,content);
 }
 
+rbnode* rbtrees::search(const Topic* topic)
+{
+    return _search(_root,topic->_name);
+}
+
 void rbtrees::traverse(const char* content)
 {
     rbnode* rootnode = this->_search(_root,content);

@@ -53,6 +53,7 @@ public:
     void    erase(const char* cnt);
     void    erase(rbnode *node);
     rbnode* search(const char* content);
+    rbnode* search(const Topic* topic);
     void    traverse(const char* content);
     void    traverse();
 private:

@@ -28,13 +28,13 @@ rbtrees::~rbtrees()
 void rbtrees::insert(const char* content, int size)
 {
     rbnode* node = (rbnode *)malloc(sizeof(rbnode));
-    hooker(node) = topic_new;
-    hooker_name(node) = (char*)malloc(size);
-    memcpy(hooker_name(node),content,size);
+    hook(node) = topic_new;
+    hook_name(node) = (char*)malloc(size);
+    memcpy(hook_name(node),content,size);
     _nodes.push_back(node);
     /* insert failed, must free node memory */
     if(! this->_insert(node)){
-        topic_free(hooker(node));
+        topic_free(hook(node));
         free(node);
         node = NULL;
     }
@@ -46,7 +46,7 @@ int  rbtrees::_insert(rbnode *data)
     /* Figure out where to put new node */
     while (*newnode) {
         rbnode *here = container_of(*newnode, rbnode, _rbnode);
-        int result = topic_cmp(hooker(data),hooker(here));
+        int result = topic_cmp(hook(data),hook(here));
         //int result = memcmp(data->_data,here->_data,here->_size);
         parent = *newnode;
         if (result < 0)
@@ -82,8 +82,8 @@ void rbtrees::erase(rbnode *node)
 void rbtrees::_free(rbnode* node)
 {
 	if (node != NULL) {
-		if (hooker(node) != NULL) {
-            topic_free(hooker(node));
+		if (hook(node) != NULL) {
+            topic_free(hook(node));
         }
         free(node);
         node = NULL;
@@ -95,7 +95,7 @@ rbnode* rbtrees::_search(rb_root_t *root, const char* content)
     rb_node_t *node = root->rb_node;
     while (node) {
         rbnode *data = container_of(node, rbnode, _rbnode);
-        int result = strcmp(content,hooker_name(data));
+        int result = strcmp(content,hook_name(data));
         if (result < 0)
             node = node->rb_left;
         else if (result > 0)
@@ -131,8 +131,8 @@ void rbtrees::_traverse(rb_root_t *root)
     rb_node_t *node = rb_first(root);
     while (node) {
         rbnode *rbn = rb_entry(node, rbnode, _rbnode);
-        // printf("name: %s level:%s\n", (char*)(hooker_name(rbn)),(char*)(hooker_lev(rbn)));
-        printf("%s ", (char*)(hooker_name(rbn)));
+        // printf("name: %s level:%s\n", (char*)(hook_name(rbn)),(char*)(hook_lev(rbn)));
+        printf("%s ", (char*)(hook_name(rbn)));
         node = rb_next(node);
     }
     printf("\n");

@@ -30,12 +30,12 @@ typedef struct __topic
 typedef struct __rbnode
 {
     rb_node_t _rbnode;
-    Topic*    _hooker;
+    Topic*    _hook;
 }rbnode;
 
-#define hooker(prb)       (prb->_hooker)
-#define hooker_lev(prb)   (hooker(prb)->_tids)
-#define hooker_name(prb)  (hooker(prb)->_name)
+#define hook(prb)       (prb->_hook)
+#define hook_lev(prb)   (hook(prb)->_tids)
+#define hook_name(prb)  (hook(prb)->_name)
 
 #ifdef  __cplusplus
 }

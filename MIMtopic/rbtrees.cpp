@@ -25,17 +25,16 @@ rbtrees::~rbtrees()
     }
 }
 
-void rbtrees::insert(const void* content, int size)
+void rbtrees::insert(const char* content, int size)
 {
     rbnode* node = (rbnode *)malloc(sizeof(rbnode));
-    node->_size = size;
-    node->_data = (char *)malloc(size);
-    memcpy(node->_data,content,size);
+    hooker(node) = topic_new;
+    hooker_name(node) = (char*)malloc(size);
+    memcpy(hooker_name(node),content,size);
     _nodes.push_back(node);
     /* insert failed, must free node memory */
     if(! this->_insert(node)){
-        free(node->_data);
-        node->_data = NULL;
+        topic_free(hooker(node));
         free(node);
         node = NULL;
     }
@@ -47,7 +46,8 @@ int  rbtrees::_insert(rbnode *data)
     /* Figure out where to put new node */
     while (*newnode) {
         rbnode *here = container_of(*newnode, rbnode, _rbnode);
-        int result = memcmp(data->_data,here->_data,here->_size);
+        int result = topic_cmp(hooker(data),hooker(here));
+        //int result = memcmp(data->_data,here->_data,here->_size);
         parent = *newnode;
         if (result < 0)
             newnode = &((*newnode)->rb_left);
@@ -62,7 +62,7 @@ int  rbtrees::_insert(rbnode *data)
     return 1;
 }
 
-void rbtrees::erase(const void *cnt)
+void rbtrees::erase(const char *cnt)
 {
     rbnode* data = _search(_root, cnt);
     if (data) {
@@ -81,24 +81,21 @@ void rbtrees::erase(rbnode *node)
 
 void rbtrees::_free(rbnode* node)
 {
-    if (node != NULL) {
-        if (node->_data  != NULL) {
-            free(node->_data);
-            node->_data = NULL;
-            node->_size = 0;
+	if (node != NULL) {
+		if (hooker(node) != NULL) {
+            topic_free(hooker(node));
         }
         free(node);
         node = NULL;
     }
 }
 
-rbnode* rbtrees::_search(rb_root_t *root, const void* content)
+rbnode* rbtrees::_search(rb_root_t *root, const char* content)
 {
     rb_node_t *node = root->rb_node;
     while (node) {
         rbnode *data = container_of(node, rbnode, _rbnode);
-        int result;
-        result = memcmp(content, data->_data,data->_size);
+        int result = strcmp(content,hooker_name(data));
         if (result < 0)
             node = node->rb_left;
         else if (result > 0)
@@ -109,12 +106,12 @@ rbnode* rbtrees::_search(rb_root_t *root, const void* content)
     return NULL;
 }
 
-rbnode* rbtrees::search(const void* content)
+rbnode* rbtrees::search(const char* content)
 {
     return _search(_root,content);
 }
 
-void rbtrees::traverse(const void* content)
+void rbtrees::traverse(const char* content)
 {
     rbnode* rootnode = this->_search(_root,content);
     rb_root_t* root = (rb_root_t*)malloc(sizeof(rb_root_t));
@@ -134,7 +131,8 @@ void rbtrees::_traverse(rb_root_t *root)
     rb_node_t *node = rb_first(root);
     while (node) {
         rbnode *rbn = rb_entry(node, rbnode, _rbnode);
-        printf("%d ", *(int*)(rbn->_data));
+        // printf("name: %s level:%s\n", (char*)(hooker_name(rbn)),(char*)(hooker_lev(rbn)));
+        printf("%s ", (char*)(hooker_name(rbn)));
         node = rb_next(node);
     }
     printf("\n");

@@ -32,11 +32,13 @@ public:
     void    erase(const void *cnt);
     void    erase(rbnode *node);
     rbnode* search(const void* content);
+    void    traverse(const void* content);
     void    traverse();
 private:
     int     _insert(rbnode *data);
     void    _free(rbnode* node);
     rbnode* _search(rb_root_t *root, const void* content);
+    void    _traverse(rb_root_t *root);
 public:
     inline void* content(rb_node *node)
     {

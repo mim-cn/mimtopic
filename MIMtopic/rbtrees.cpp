@@ -32,7 +32,13 @@ void rbtrees::insert(const void* content, int size)
     node->_data = (char *)malloc(size);
     memcpy(node->_data,content,size);
     _nodes.push_back(node);
-    this->_insert(node);
+    /* insert failed, must free node memory */
+    if(! this->_insert(node)){
+        free(node->_data);
+        node->_data = NULL;
+        free(node);
+        node = NULL;
+    }
 }
 
 int  rbtrees::_insert(rbnode *data)
@@ -108,12 +114,27 @@ rbnode* rbtrees::search(const void* content)
     return _search(_root,content);
 }
 
-void    rbtrees::traverse()
+void rbtrees::traverse(const void* content)
 {
-    rb_node_t *node = rb_first(_root);
+    rbnode* rootnode = this->_search(_root,content);
+    rb_root_t* root = (rb_root_t*)malloc(sizeof(rb_root_t));
+    root->rb_node = &rootnode->_rbnode;
+    this->_traverse(root);
+    free(root);
+    root = NULL;
+}
+
+void rbtrees::traverse()
+{
+    this->_traverse(_root);
+}
+
+void rbtrees::_traverse(rb_root_t *root)
+{
+    rb_node_t *node = rb_first(root);
     while (node) {
         rbnode *rbn = rb_entry(node, rbnode, _rbnode);
-        printf("%d ", *(int*)content(node));
+        printf("%d ", *(int*)(rbn->_data));
         node = rb_next(node);
     }
     printf("\n");

@@ -28,8 +28,9 @@ rbtrees::~rbtrees()
 void rbtrees::insert(const char* content, int size)
 {
     rbnode* node = (rbnode *)malloc(sizeof(rbnode));
+    memset(node,0,sizeof(rbnode));
     hook(node) = topic_new;
-    hook_name(node) = (char*)malloc(size);
+    hook_name(node) = (char*)calloc(1,size);
     memcpy(hook_name(node),content,size);
     _nodes.push_back(node);
     /* insert failed, must free node memory */

@@ -11,7 +11,7 @@ int main()
     rbtrees rb;
     /* *insert */
     int i = 0,num = 0;
-    char number[2] = {0};
+    char number[3] = {0};
     int flag = 0;
     srand((unsigned) time(NULL));
     printf("insert node 32 number:\n");
